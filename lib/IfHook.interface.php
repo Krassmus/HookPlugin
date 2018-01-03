@@ -8,11 +8,7 @@ interface IfHook {
 
     public function listenToNotificationEvents();
 
-    /**
-     * Return the field-name of the corresponding object. Only needed if IfHook listens to NotificationCenter. If it returns NULL this means the object listens to any notifications.
-     * @return null|string
-     */
-    public function userIdField();
+    public function findHooksByIftypeAndObject($type, $object);
 
     public function getEditTemplate(Hook $hook);
 

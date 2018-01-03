@@ -14,6 +14,32 @@ class ThenWebHook implements ThenHook {
     }
 
     public function perform(Hook $hook, $parameters) {
+        $header = array();
 
+        $header[] = "Content-Type: application/json";
+
+        $r = curl_init();
+        curl_setopt($r, CURLOPT_URL, $hook['then_settings']['webhook_url']);
+        curl_setopt($r, CURLOPT_POST, true);
+        curl_setopt($r, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($r, CURLOPT_RETURNTRANSFER, true);
+
+        $payload = array();
+        foreach ($hook['then_settings']['json']['keys'] as $i => $key) {
+            if (trim($key)) {
+                $value = $hook['then_settings']['json']['values'][$i];
+                foreach ($parameters as $parameter => $v) {
+                    $value = str_replace("{{".$parameter."}}", $v, $value);
+                }
+                $payload[$key] = $value;
+            }
+        }
+
+        curl_setopt($r, CURLOPT_POSTFIELDS, json_encode($payload));
+
+        $result = curl_exec($r);
+        curl_close($r);
+        $output = "Payload: ".json_encode($payload)."\n\nAntwort vom Server: ".$result;
+        return $output;
     }
 }

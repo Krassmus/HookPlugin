@@ -2,7 +2,8 @@
 
 class IfMessageHook implements IfHook {
 
-    static public function getName() {
+    static public function getName()
+    {
         return _("Stud.IP-Nachricht");
     }
 
@@ -16,18 +17,21 @@ class IfMessageHook implements IfHook {
         return array("MessageDidCreate", "MessageDidSend");
     }
 
-    public function userIdField() {
-        return null;
+    public function findHooksByIfTypeAndObject($type, $object)
+    {
+        return Hook::findBySQL("INNER JOIN message_user USING (user_id) WHERE message_user.message_id = ? AND if_type = ?", array($object->getId(), $type));
     }
 
-    public function getEditTemplate(Hook $hook) {
+    public function getEditTemplate(Hook $hook)
+    {
         $tf = new Flexi_TemplateFactory(__DIR__."/../../views");
         $template = $tf->open("ifs/ifmessage/edit.php");
         $template->hook = $hook;
         return $template;
     }
 
-    public function check(Hook $hook, $type, $event, $message) {
+    public function check(Hook $hook, $type, $event, $message)
+    {
         if (is_string($message)) {
             $message = Message::find($message);
         }

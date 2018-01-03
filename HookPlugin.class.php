@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__."/lib/Hook.php";
+require_once __DIR__."/lib/HookLog.php";
 require_once __DIR__."/lib/IfHook.interface.php";
 require_once __DIR__."/lib/ThenHook.interface.php";
 foreach (scandir(__DIR__."/lib/if_hooks") as $file) {
@@ -32,11 +33,7 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin
             if (in_array('IfHook', class_implements($class))) {
                 $hookobject = new $class();
                 if (in_array($event, $hookobject->listenToNotificationEvents())) {
-                    if ($hookobject->userIdField()) {
-                        $hooks += Hook::findBySQL("if_type = ? AND user_id = ?", array($class, $object[$hookobject->userIdField()]));
-                    } else {
-                        $hooks += Hook::findBySQL("if_type = ?", array($class));
-                    }
+                    $hooks += $hookobject->findHooksByIftypeAndObject($class, $object);
                 }
             }
         }
@@ -46,13 +43,26 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin
                 $parameters = $ifhook->check($hook, "NotificationCenter", $event, $object);
                 if (is_array($parameters)) {
                     $then = new $hook['then_type']();
-                    $then->perform($hook, $parameters);
+                    $output = $then->perform($hook, $parameters);
                     $hook['last_triggered'] = time();
                     $hook->store();
+
+                    $log = new HookLog();
+                    $log['log_text'] = $output;
+                    $log['user_id'] = $GLOBALS['user']->id;
+                    $log['hook_id'] = $hook->getId();
+                    $log->store();
+                    HookLog::cleanUpLog();
                 }
             } catch(Exception $e) {
                 //logging
-                var_dump($e->getMessage());
+                $log = new HookLog();
+                $log['exception'] = 1;
+                $log['log_text'] = $e->getMessage();
+                $log['user_id'] = $GLOBALS['user']->id;
+                $log['hook_id'] = $hook->getId();
+                $log->store();
+                HookLog::cleanUpLog();
             }
         }
     }

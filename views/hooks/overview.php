@@ -24,6 +24,13 @@
                         <a href="<?= PluginEngine::getLink($plugin, array(), "hooks/edit/".$hook->getId()) ?>" data-dialog>
                             <?= Icon::create("edit", "clickable")->asImg(20) ?>
                         </a>
+                        <? if ($hook['last_triggered']) : ?>
+                        <a href="<?= PluginEngine::getLink($plugin, array(), "logs/overview/".$hook->getId()) ?>" data-dialog>
+                            <?= Icon::create("log", "clickable")->asImg(20) ?>
+                        </a>
+                        <? else : ?>
+                            <?= Icon::create("log", "inactive")->asImg(20) ?>
+                        <? endif ?>
                         <form action="<?= PluginEngine::getLink($plugin, array(), "hooks/delete/".$hook->getId()) ?>" method="post" style="display: inline-block;" onSubmit="return window.confirm('<?= _("Wirklich löschen?") ?>');">
                             <button style="border: none; background: none; cursor: pointer;">
                                 <?= Icon::create("trash", "clickable")->asImg(20) ?>
