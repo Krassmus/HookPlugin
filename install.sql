@@ -12,3 +12,13 @@ CREATE TABLE `hooks` (
   `mkdate` int(11) NOT NULL,
   PRIMARY KEY (`hook_id`)
 ) ENGINE=InnoDB
+
+CREATE TABLE `hooks_log` (
+  `log_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `hook_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `log_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` tinyint(4) NOT NULL DEFAULT '0',
+  `mkdate` int(11) NOT NULL,
+  PRIMARY KEY (`log_id`)
+) ENGINE=InnoDB
