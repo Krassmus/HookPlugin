@@ -8,7 +8,7 @@ interface IfHook {
 
     public function listenToNotificationEvents();
 
-    public function findHooksByIftypeAndObject($type, $object);
+    public function findHooksByObject($object);
 
     public function getEditTemplate(Hook $hook);
 

@@ -13,4 +13,11 @@ class LogsController extends PluginController {
         PageLayout::setTitle(_("Logs"));
     }
 
+    public function details_action($log_id)
+    {
+        Navigation::activateItem("/tools/hooks");
+        PageLayout::setTitle(_("Log Details"));
+        $this->log = new HookLog($log_id);
+    }
+
 }

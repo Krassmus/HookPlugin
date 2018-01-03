@@ -33,7 +33,7 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin
             if (in_array('IfHook', class_implements($class))) {
                 $hookobject = new $class();
                 if (in_array($event, $hookobject->listenToNotificationEvents())) {
-                    $hooks += $hookobject->findHooksByIftypeAndObject($class, $object);
+                    $hooks += $hookobject->findHooksByObject($object);
                 }
             }
         }

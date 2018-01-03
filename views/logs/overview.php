@@ -19,13 +19,17 @@
                         <? endif ?>
                     </td>
                     <td>
-                        <?= htmlReady($log->hook['name']) ?>
+                        <a href="<?= PluginEngine::getLink($plugin, array(), "logs/details/".$log->getId()) ?>" data-dialog>
+                            <?= htmlReady($log->hook['name']) ?>
+                        </a>
                     </td>
                     <td>
                         <?= date("j.n.Y G:i", $log['mkdate']) ?>
                     </td>
-                    <td>
-                        <?= formatReady($log['log_text']) ?>
+                    <td class="actions">
+                        <a href="<?= PluginEngine::getLink($plugin, array(), "logs/details/".$log->getId()) ?>" data-dialog>
+                            <?= Icon::create("log+new", "clickable")->asImg() ?>
+                        </a>
                     </td>
                 </tr>
             <? endforeach ?>

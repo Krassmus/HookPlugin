@@ -1,1 +1,1 @@
-<?= _("Wenn ich eine Stud.IP-benachrichtigung (rote Zahl) bekomme.") ?>
+<?= _("Wenn ich eine Stud.IP-Benachrichtigung (rote Zahl) bekomme.") ?>

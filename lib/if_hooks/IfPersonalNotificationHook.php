@@ -20,12 +20,12 @@ class IfPersonalNotificationHook implements IfHook {
 
     public function listenToNotificationEvents()
     {
-        return array("PersonalNotificationsDidStore");
+        return array("PersonalNotificationsDidStore", "PersonalNotificationsDidAssign");
     }
 
-    public function findHooksByIfTypeAndObject($type, $object)
+    public function findHooksByObject($object)
     {
-        return Hook::findBySQL("INNER JOIN personal_notifications_user USING (user_id) WHERE personal_notifications_user.personal_notification_id = ? AND if_type = ?", array($object->getId(), $type));
+        return Hook::findBySQL("INNER JOIN personal_notifications_user USING (user_id) WHERE personal_notifications_user.personal_notification_id = ? AND if_type = ?", array($object->getId(), get_class($this)));
     }
 
     public function check(Hook $hook, $type, $event, $notification) {
