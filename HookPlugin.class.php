@@ -38,31 +38,33 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin
             }
         }
         foreach ($hooks as $hook) {
-            try {
-                $ifhook = new $hook['if_type']();
-                $parameters = $ifhook->check($hook, "NotificationCenter", $event, $object);
-                if (is_array($parameters)) {
-                    $then = new $hook['then_type']();
-                    $output = $then->perform($hook, $parameters);
-                    $hook['last_triggered'] = time();
-                    $hook->store();
+            if ($hook['activated']) {
+                try {
+                    $ifhook = new $hook['if_type']();
+                    $parameters = $ifhook->check($hook, "NotificationCenter", $event, $object);
+                    if (is_array($parameters)) {
+                        $then = new $hook['then_type']();
+                        $output = $then->perform($hook, $parameters);
+                        $hook['last_triggered'] = time();
+                        $hook->store();
 
+                        $log = new HookLog();
+                        $log['log_text'] = $output;
+                        $log['user_id'] = $GLOBALS['user']->id;
+                        $log['hook_id'] = $hook->getId();
+                        $log->store();
+                        HookLog::cleanUpLog();
+                    }
+                } catch (Exception $e) {
+                    //logging
                     $log = new HookLog();
-                    $log['log_text'] = $output;
+                    $log['exception'] = 1;
+                    $log['log_text'] = $e->getMessage();
                     $log['user_id'] = $GLOBALS['user']->id;
                     $log['hook_id'] = $hook->getId();
                     $log->store();
                     HookLog::cleanUpLog();
                 }
-            } catch(Exception $e) {
-                //logging
-                $log = new HookLog();
-                $log['exception'] = 1;
-                $log['log_text'] = $e->getMessage();
-                $log['user_id'] = $GLOBALS['user']->id;
-                $log['hook_id'] = $hook->getId();
-                $log->store();
-                HookLog::cleanUpLog();
             }
         }
     }

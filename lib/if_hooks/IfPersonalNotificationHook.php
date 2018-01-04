@@ -25,7 +25,7 @@ class IfPersonalNotificationHook implements IfHook {
 
     public function findHooksByObject($object)
     {
-        return Hook::findBySQL("INNER JOIN personal_notifications_user USING (user_id) WHERE personal_notifications_user.personal_notification_id = ? AND if_type = ?", array($object->getId(), get_class($this)));
+        return Hook::findBySQL("INNER JOIN personal_notifications_user USING (user_id) WHERE personal_notifications_user.personal_notification_id = ? AND if_type = ? AND activated = '1'", array($object->getId(), get_class($this)));
     }
 
     public function check(Hook $hook, $type, $event, $notification) {

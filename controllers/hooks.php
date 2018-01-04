@@ -19,6 +19,7 @@ class HooksController extends PluginController {
         }
         if (Request::isPost()) {
             $data = Request::getArray("data");
+            $data['activated'] = (int) $data['activated'];
             $this->hook->setData($data);
             $this->hook['user_id'] = $GLOBALS['user']->id;
             $this->hook->store();

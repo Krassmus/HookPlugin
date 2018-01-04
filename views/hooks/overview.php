@@ -1,6 +1,7 @@
 <table class="default">
     <thead>
         <tr>
+            <th><?= _("Aktiv") ?></th>
             <th><?= _("Name") ?></th>
             <th><?= _("Typ") ?></th>
             <th><?= _("Letzte Ausführung") ?></th>
@@ -11,6 +12,13 @@
         <? if (count($hooks)) : ?>
             <? foreach ($hooks as $hook) : ?>
                 <tr>
+                    <td>
+                        <? if ($hook['activated']) : ?>
+                            <?= Icon::create("checkbox-checked", "info")->asImg(20) ?>
+                        <? else : ?>
+                            <?= Icon::create("checkbox-unchecked", "info")->asImg(20) ?>
+                        <? endif ?>
+                    </td>
                     <td><?= htmlReady($hook['name']) ?></td>
                     <td>
                         <?= htmlReady($hook['if_type'] ? $hook['if_type']::getName() : "") ?>

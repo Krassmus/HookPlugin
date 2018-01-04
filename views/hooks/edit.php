@@ -17,6 +17,11 @@
                 <option value="0"<?= !$hook->isNew() && !$hook['cronjob'] ? " selected" : "" ?>><?= _("Hoch (sofort ausführen)") ?></option>
             </select>
         </label>
+
+        <label>
+            <input type="checkbox" name="data[activated]" value="1"<?= $hook['activated'] || $hook->isNew() ? " checked" : "" ?>>
+            <?= _("Aktiv") ?>
+        </label>
     </fieldset>
 
     <fieldset>
