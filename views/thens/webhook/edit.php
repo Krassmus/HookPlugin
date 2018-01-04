@@ -16,33 +16,35 @@
         </tr>
     </thead>
     <tbody>
-        <? foreach ($hook['then_settings']['json']['keys'] as $i => $key) : ?>
-            <? if (trim($key)) : ?>
-                <tr>
-                    <td>
-                        <input type="text"
-                               name="data[then_settings][json][keys][]"
-                               placeholder="some_id"
-                               value="<?= htmlReady($key) ?>">
-                    </td>
-                    <td>
-                        <textarea name="data[then_settings][json][values][]"
-                                  placeholder="any value or :attribute"><?= htmlReady($hook['then_settings']['json']['values'][$i]) ?></textarea>
-                    </td>
-                    <td class="actions">
-                        <a href="#" onClick="jQuery(this).closest('tr').remove(); return false;">
-                            <?= Icon::create("trash", "clickable")->asImg(20) ?>
-                        </a>
-                    </td>
-                </tr>
-            <? endif ?>
-        <? endforeach ?>
+        <? if ($hook['then_settings']['json']['keys']) : ?>
+            <? foreach ($hook['then_settings']['json']['keys'] as $i => $key) : ?>
+                <? if (trim($key)) : ?>
+                    <tr>
+                        <td>
+                            <input type="text"
+                                   name="data[then_settings][json][keys][]"
+                                   placeholder="some_id"
+                                   value="<?= htmlReady($key) ?>">
+                        </td>
+                        <td>
+                            <textarea name="data[then_settings][json][values][]"
+                                      placeholder="any value or :attribute"><?= htmlReady($hook['then_settings']['json']['values'][$i]) ?></textarea>
+                        </td>
+                        <td class="actions">
+                            <a href="#" onClick="jQuery(this).closest('tr').remove(); return false;">
+                                <?= Icon::create("trash", "clickable")->asImg(20) ?>
+                            </a>
+                        </td>
+                    </tr>
+                <? endif ?>
+            <? endforeach ?>
+        <? endif ?>
         <tr>
             <td>
                 <input type="text" name="data[then_settings][json][keys][]" placeholder="some_id">
             </td>
             <td>
-                <textarea name="data[then_settings][json][values][]" placeholder="any value or :attribute"></textarea>
+                <textarea name="data[then_settings][json][values][]" placeholder="any value or {{attribute}}"></textarea>
             </td>
             <td class="actions">
                 <a href="#" onClick="jQuery(this).closest('tr').remove(); return false;">
