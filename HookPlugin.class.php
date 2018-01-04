@@ -17,6 +17,23 @@ foreach (scandir(__DIR__."/lib/then_hooks") as $file) {
 
 class HookPlugin extends StudIPPlugin implements SystemPlugin
 {
+    static public function formatTextTemplate($text, $parameters) {
+        foreach ($parameters as $parameter => $value) {
+            $text = str_replace("{{".$parameter."}}", $value, $text);
+        }
+        $functions = array("md5", "rawurlencode", "urlencode", "htmlReady", "formatReady");
+        foreach ($functions as $function) {
+            $text = preg_replace_callback(
+                "/".strtoupper($function)."\((.*)\)/",
+                function ($match) use ($function) {
+                    return $function($match[1]);
+                },
+                $text
+            );
+        }
+        return $text;
+    }
+
     public function __construct()
     {
         parent::__construct();

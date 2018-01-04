@@ -8,6 +8,7 @@ CREATE TABLE `hooks` (
   `if_settings` text COLLATE utf8mb4_unicode_ci,
   `then_type` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `then_settings` text COLLATE utf8mb4_unicode_ci,
+  `general_settings` text COLLATE utf8mb4_unicode_ci,
   `last_triggered` int(11) DEFAULT NULL,
   `chdate` int(11) NOT NULL,
   `mkdate` int(11) NOT NULL,

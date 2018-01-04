@@ -14,10 +14,7 @@ class UpdateAvatarHook implements ThenHook {
     }
 
     public function perform(Hook $hook, $parameters) {
-        $url = $hook['then_settings']['avatar_url'];
-        foreach ($parameters as $key => $parameter) {
-            $url = str_replace("{{".$key."}}", $parameter, $url);
-        }
+        $url = HookPlugin::formatTextTemplate($hook['then_settings']['avatar_url'], $parameters);
         $tmp_avatar = $GLOBALS['TMP_PATH']."/"."avatar_".$hook['user_id'].".jpg";
         $success = file_put_contents($tmp_avatar, file_get_contents($url));
         if ($success) {

@@ -46,8 +46,9 @@
 
         <div class="if_hook_template">
             <? if ($hook['if_type']) : ?>
-                <? $then_hook = new $hook['if_type']() ?>
-                <?= $then_hook->getEditTemplate($hook)->render() ?>
+                <? $ifhook = new $hook['if_type']() ?>
+                <?= $ifhook->getEditTemplate($hook)->render() ?>
+                <?= $this->render_partial("hooks/_parameters.php", array('parameters' => $ifhook->getParameters($this->hook))) ?>
             <? endif ?>
         </div>
     </fieldset>

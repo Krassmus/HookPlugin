@@ -27,10 +27,7 @@ class ThenWebHook implements ThenHook {
         $payload = array();
         foreach ($hook['then_settings']['json']['keys'] as $i => $key) {
             if (trim($key)) {
-                $value = $hook['then_settings']['json']['values'][$i];
-                foreach ($parameters as $parameter => $v) {
-                    $value = str_replace("{{".$parameter."}}", $v, $value);
-                }
+                $value = HookPlugin::formatTextTemplate($hook['then_settings']['json']['values'][$i], $parameters);
                 $payload[$key] = $value;
             }
         }

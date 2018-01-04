@@ -14,12 +14,8 @@ class EmailHook implements ThenHook {
     }
 
     public function perform(Hook $hook, $parameters) {
-        $subject = $hook['then_settings']['subject'];
-        $body = $hook['then_settings']['body'];
-        foreach ($parameters as $parameter => $value) {
-            $subject = str_replace("{{".$parameter."}}", $value, $subject);
-            $body = str_replace("{{".$parameter."}}", $value, $body);
-        }
+        $subject = HookPlugin::formatTextTemplate($hook['then_settings']['subject'], $parameters);
+        $body = HookPlugin::formatTextTemplate($hook['then_settings']['body'], $parameters);
         StudipMail::sendMessage(
             $hook['then_settings']['to_email'],
             $subject,

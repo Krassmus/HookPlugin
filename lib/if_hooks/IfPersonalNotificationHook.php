@@ -20,30 +20,20 @@ class IfPersonalNotificationHook implements IfHook {
 
     public function listenToNotificationEvents()
     {
-        return array("PersonalNotificationsDidStore", "PersonalNotificationsDidAssign");
+        return array("PersonalNotificationsUserDidStore");
     }
 
     public function findHooksByObject($object)
     {
-        return Hook::findBySQL("INNER JOIN personal_notifications_user USING (user_id) WHERE personal_notifications_user.personal_notification_id = ? AND if_type = ? AND activated = '1'", array($object->getId(), get_class($this)));
+        return Hook::findBySQL("INNER JOIN personal_notifications_user USING (user_id) WHERE personal_notifications_user.personal_notification_id = ? AND if_type = ? AND activated = '1'", array($object['personal_notification_id'], get_class($this)));
     }
 
-    public function check(Hook $hook, $type, $event, $notification) {
-        $statement = DBManager::get()->prepare("
-            SELECT 1 
-            FROM personal_notifications_user 
-            WHERE user_id = ?
-                AND personal_notification_id = ?
-        ");
-        $statement->execute(array($hook['user_id'], $notification->getId()));
-        if ($statement->fetch()) {
-            return array(
-                'avatar' => $notification['avatar'],
-                'nachricht' => $notification['text'],
-                'url' => $notification['url']
-            );
-        } else {
-            return false;
-        }
+    public function check(Hook $hook, $type, $event, $notification_user) {
+        $notification = $notification_user->notification;
+        return array(
+            'avatar' => $notification['avatar'],
+            'nachricht' => $notification['text'],
+            'url' => $notification['url']
+        );
     }
 }
