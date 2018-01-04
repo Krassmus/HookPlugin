@@ -7,7 +7,7 @@ class IfMessageHook implements IfHook {
         return _("Stud.IP-Nachricht");
     }
 
-    public function getParameters()
+    public function getParameters(Hook $hook)
     {
         return array("von_id", "von_name", "von_mail", "betreff", "nachricht");
     }

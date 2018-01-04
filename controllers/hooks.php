@@ -51,7 +51,10 @@ class HooksController extends PluginController {
             throw new Exception("Falscher Hook-Name");
         }
         $template = $ifhook->getEditTemplate($this->hook);
-        $this->render_text($template->render());
+        $this->parameters = $ifhook->getParameters($this->hook);
+        $text = $template->render();
+        $text .= $this->render_template_as_string("hooks/_parameters.php");
+        $this->render_text($text);
     }
 
     public function edit_then_hook_action($thenhook, $hook_id = null)

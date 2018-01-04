@@ -13,10 +13,13 @@ class EndpointsController extends PluginController {
         }
         $if_hook = new $this->hook['if_type']();
 
-        $parameters = $if_hook->check($this->hook, "Webhook", "", $_POST);
+        $body = file_get_contents('php://input');
+        $request = json_decode($body) ?: $_POST;
+
+        $parameters = $if_hook->check($this->hook, "Webhook", "", $request);
         if (is_array($parameters)) {
             $then = new $this->hook['then_type']();
-            $output = $then->perform($this->hook, $parameters);
+            $output = "Webhook-request-body:\n" . $body . "\n\n" . $then->perform($this->hook, $parameters);
             $this->hook['last_triggered'] = time();
             $this->hook->store();
 

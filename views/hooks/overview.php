@@ -19,7 +19,17 @@
                             <?= Icon::create("checkbox-unchecked", "info")->asImg(20) ?>
                         <? endif ?>
                     </td>
-                    <td><?= htmlReady($hook['name']) ?></td>
+                    <td>
+                        <? $last_log_entry = HookLog::findOneBySQL("hook_id = ? ORDER BY mkdate DESC LIMIT 1", array($hook->getId())) ?>
+                        <? if ($last_log_entry && $last_log_entry['exception']) : ?>
+                            <a href="<?= PluginEngine::getLink($plugin, array(), "logs/details/".$last_log_entry->getId()) ?>"
+                               data-dialog
+                               title="<?= _("Fehler beim letzten Ausführen. Schauen Sie in die Details des Logs.") ?>">
+                                <?= Icon::create("decline", "status-red")->asImg(20, ['class' => "text-bottom"]) ?>
+                            </a>
+                        <? endif ?>
+                        <?= htmlReady($hook['name']) ?>
+                    </td>
                     <td>
                         <?= htmlReady($hook['if_type'] ? $hook['if_type']::getName() : "") ?>
                         <?= Icon::create("arr_2right", "inactive")->asImg(16, ['class' => "text-bottom"]) ?>

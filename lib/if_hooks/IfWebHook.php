@@ -7,9 +7,10 @@ class IfWebHook implements IfHook {
         return _("Webhook");
     }
 
-    public function getParameters()
+    public function getParameters(Hook $hook)
     {
-        return array();
+
+        return $hook['if_settings']['example'] ? array_keys($hook['if_settings']['example']) : array();
     }
 
     public function listenToNotificationEvents()
@@ -37,6 +38,8 @@ class IfWebHook implements IfHook {
 
     public function check(Hook $hook, $type, $event, $request)
     {
-        return $request;
+        $hook['if_settings']['example'] = $request;
+        $hook->store();
+        return (array) $request;
     }
 }

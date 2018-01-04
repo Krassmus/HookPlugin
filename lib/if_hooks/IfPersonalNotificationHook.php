@@ -6,7 +6,7 @@ class IfPersonalNotificationHook implements IfHook {
         return _("Stud.IP-Benachrichtigung");
     }
 
-    public function getParameters()
+    public function getParameters(Hook $hook)
     {
         return array("avatar", "url", "nachricht");
     }

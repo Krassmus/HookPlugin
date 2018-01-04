@@ -8,7 +8,7 @@ interface IfHook {
      */
     static public function getName();
 
-    public function getParameters();
+    public function getParameters(Hook $hook);
 
     /**
      * Returns an array of NotificationCenter events like 'CourseDidStore'. Return empty array if you don't want to
