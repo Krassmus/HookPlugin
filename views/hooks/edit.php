@@ -1,3 +1,22 @@
+<?
+$classes = get_declared_classes();
+$if_hook_classes = array();
+$then_hook_classes = array();
+foreach ($classes as $class) {
+    if (in_array('IfHook', class_implements($class))) {
+        $if_hook_classes[] = $class;
+    }
+    if (in_array('ThenHook', class_implements($class))) {
+        $then_hook_classes[] = $class;
+    }
+}
+usort($if_hook_classes, function ($a, $b) {
+    return strcasecmp($a::getName(), $b::getName());
+});
+usort($then_hook_classes, function ($a, $b) {
+    return strcasecmp($a::getName(), $b::getName());
+});
+?>
 <form action="<?= PluginEngine::getLink($plugin, array(), "hooks/edit/".$hook->getId()) ?>"
       method="post"
       class="default"
@@ -33,9 +52,8 @@
                     onChange="jQuery('.if_hook_template').css('opacity', 0.5).load(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/hookplugin/hooks/edit_if_hook/' + this.value + '/<?= $hook->getId() ?>', function () { jQuery(this).css('opacity', 1); });"
                     required>
                 <option></option>
-                <? foreach (get_declared_classes() as $class) :
+                <? foreach ($classes as $class) :
                     if (in_array('IfHook', class_implements($class))) : ?>
-                        <? $then_hook = new $class() ?>
                         <option value="<?= htmlReady($class) ?>"<?= $hook['if_type'] === $class ? " selected" : "" ?>>
                             <?= htmlReady($class::getName()) ?>
                         </option>
@@ -62,14 +80,12 @@
                     onChange="jQuery('.then_hook_template').css('opacity', 0.5).load(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/hookplugin/hooks/edit_then_hook/' + this.value + '/<?= $hook->getId() ?>', function () { jQuery(this).css('opacity', 1); });"
                     required>
                 <option></option>
-                <? foreach (get_declared_classes() as $class) :
-                    if (in_array('ThenHook', class_implements($class))) : ?>
-                        <? $then_hook = new $class() ?>
-                        <option value="<?= htmlReady($class) ?>"<?= $hook['then_type'] === $class ? " selected" : "" ?>>
-                            <?= htmlReady($class::getName()) ?>
-                        </option>
-                    <? endif;
-                endforeach ?>
+                <? foreach ($then_hook_classes as $class) : ?>
+                    <? $then_hook = new $class() ?>
+                    <option value="<?= htmlReady($class) ?>"<?= $hook['then_type'] === $class ? " selected" : "" ?>>
+                        <?= htmlReady($class::getName()) ?>
+                    </option>
+                <? endforeach ?>
             </select>
         </label>
 
