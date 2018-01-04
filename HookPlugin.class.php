@@ -2,6 +2,7 @@
 
 require_once __DIR__."/lib/Hook.php";
 require_once __DIR__."/lib/HookLog.php";
+require_once __DIR__."/lib/HookQueue.php";
 require_once __DIR__."/lib/IfHook.interface.php";
 require_once __DIR__."/lib/ThenHook.interface.php";
 foreach (scandir(__DIR__."/lib/if_hooks") as $file) {
@@ -60,17 +61,25 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin
                     $ifhook = new $hook['if_type']();
                     $parameters = $ifhook->check($hook, "NotificationCenter", $event, $object);
                     if (is_array($parameters)) {
-                        $then = new $hook['then_type']();
-                        $output = $then->perform($hook, $parameters);
-                        $hook['last_triggered'] = time();
-                        $hook->store();
+                        if ($hook['cronjob']) {
+                            $queue_entry = new HookQueue();
+                            $queue_entry['hook_id'] = $hook->getId();
+                            $queue_entry['parameters'] = $parameters;
+                            $queue_entry['user_id'] = $GLOBALS['user']->id;
+                            $queue_entry->store();
+                        } else {
+                            $then = new $hook['then_type']();
+                            $output = $then->perform($hook, $parameters);
+                            $hook['last_triggered'] = time();
+                            $hook->store();
 
-                        $log = new HookLog();
-                        $log['log_text'] = $output;
-                        $log['user_id'] = $GLOBALS['user']->id;
-                        $log['hook_id'] = $hook->getId();
-                        $log->store();
-                        HookLog::cleanUpLog();
+                            $log = new HookLog();
+                            $log['log_text'] = $output;
+                            $log['user_id'] = $GLOBALS['user']->id;
+                            $log['hook_id'] = $hook->getId();
+                            $log->store();
+                            HookLog::cleanUpLog();
+                        }
                     }
                 } catch (Exception $e) {
                     //logging

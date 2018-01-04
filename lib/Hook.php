@@ -7,7 +7,6 @@ class Hook extends SimpleORMap {
         $config['db_table'] = 'hooks';
         $config['serialized_fields']['if_settings']      = "JSONArrayObject";
         $config['serialized_fields']['then_settings']    = "JSONArrayObject";
-        $config['serialized_fields']['general_settings'] = "JSONArrayObject";
         parent::configure($config);
     }
 
