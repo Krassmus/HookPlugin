@@ -25,5 +25,6 @@ class EmailHook implements ThenHook {
             $subject,
             $body
         );
+        return sprintf("Mail wurde versendet an %s\nBetreff: %s\n\nNachricht:\n%s", $hook['then_settings']['to_email'], $subject, $body);
     }
 }

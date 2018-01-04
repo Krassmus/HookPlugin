@@ -17,17 +17,18 @@ class EndpointsController extends PluginController {
         if (is_array($parameters)) {
             $then = new $this->hook['then_type']();
             $output = $then->perform($this->hook, $parameters);
-            $hook['last_triggered'] = time();
-            $hook->store();
+            $this->hook['last_triggered'] = time();
+            $this->hook->store();
 
             $log = new HookLog();
-            $log['log_text'] = $output;
+            $log['log_text'] = (string) $output;
             $log['user_id'] = $GLOBALS['user']->id;
-            $log['hook_id'] = $hook->getId();
+            $log['hook_id'] = $this->hook->getId();
             $log->store();
             HookLog::cleanUpLog();
         }
 
+        $this->render_text("ok");
     }
 
 }
