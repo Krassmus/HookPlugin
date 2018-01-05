@@ -20,7 +20,7 @@ class IfPersonalNotificationHook implements IfHook {
 
     public function listenToNotificationEvents()
     {
-        return array("PersonalNotificationsUserDidStore");
+        return array("PersonalNotificationsUserDidCreate");
     }
 
     public function findHooksByObject($object)

@@ -1,31 +1,11 @@
 <?php
 
-class AddCronjobForAutomaticTurns extends Migration
+class AddCronjob extends Migration
 {
     function up() {
-        DBManager::get()->exec("
-            CREATE TABLE IF NOT EXISTS `diplomacyfutureturns` (
-                `turn_id` varchar(32) NOT NULL,
-                `Seminar_id` varchar(32) NOT NULL,
-                `name` varchar(64) DEFAULT NULL,
-                `description` text DEFAULT NULL,
-                `start_time` bigint(20) NOT NULL,
-                `whenitsdone` tinyint DEFAULT '0' NOT NULL,
-                `chdate` bigint(20) NOT NULL,
-                `mkdate` bigint(20) NOT NULL,
-                PRIMARY KEY (`turn_id`),
-                KEY `Seminar_id` (`Seminar_id`)
-            ) ENGINE=MyISAM;
-        ");
-
-        DBManager::get()->exec("
-            ALTER TABLE `diplomacycommands`
-            ADD `iamdone` tinyint DEFAULT '0' NOT NULL AFTER `content`;
-        ");
-
         $new_job = array(
-            'filename'    => 'public/plugins_packages/RasmusFuhse/Diplomacy/automatic_turn.cronjob.php',
-            'class'       => 'AutomaticTurnJob',
+            'filename'    => 'public/plugins_packages/RasmusFuhse/HookPlugin/trigger_queue.cronjob.php',
+            'class'       => 'TriggerQueueJob',
             'priority'    => 'normal',
             'minute'      => '-1'
         );
@@ -60,10 +40,19 @@ class AddCronjobForAutomaticTurns extends Migration
             ':priority'    => $new_job['priority'],
             ':minute'      => $new_job['minute'],
         ));
+
+        Config::get()->create("HOOKS_FORCE_CRONJOBS", array(
+            'value' => 0,
+            'type' => "boolean",
+            'range' => "global",
+            'section' => "HOOKPLUGIN"
+        ));
     }
     
     function down() {
-        DBManager::get()->exec("DROP TABLE IF EXISTS `diplomacyfutureturns` ");
+        DBManager::get()->exec("
+            DELETE FROM `config` WHERE `config_id` = MD5('HOOKS_FORCE_CRONJOBS')
+        ");
     }
     
     

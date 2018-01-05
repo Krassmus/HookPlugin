@@ -7,7 +7,7 @@ class TriggerQueueJob extends CronJob
      */
     public static function getName()
     {
-        return _('Wenn/Dann-Plugin: Löst die Hooks per Cronjob aus.');
+        return _('Wenn/Dann-Plugin: LÃ¶st die Hook-Queue per Cronjob aus.');
     }
 
     /**
@@ -15,7 +15,7 @@ class TriggerQueueJob extends CronJob
      */
     public static function getDescription()
     {
-        return _('Wenn ein Wenn/Dann eine niedrige Priorität hat, wird der Hook in einer Queue gespeichert. Dieser Cronjob führt die Hooks in der Queue der Reihe nach aus.');
+        return _('Wenn ein Wenn/Dann eine niedrige PrioritÃ¤t hat, wird der Hook in einer Queue gespeichert. Dieser Cronjob fÃ¼hrt die Hooks in der Queue der Reihe nach aus.');
     }
 
     public function setUp() {

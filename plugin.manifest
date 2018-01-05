@@ -2,3 +2,4 @@ pluginname=Wenn/Dann
 pluginclassname=HookPlugin
 origin=RasmusFuhse
 version=1.0
+studipMinVersion=4.0

@@ -29,13 +29,21 @@ usort($then_hook_classes, function ($a, $b) {
             <input type="text" name="data[name]" value="<?= htmlReady($hook['name']) ?>" required>
         </label>
 
-        <label>
-            <?= _("Priorität") ?>
-            <select name="data[cronjob]">
-                <option value="1"<?= $hook->isNew() || $hook['cronjob'] ? " selected" : "" ?>><?= _("Gering (einmal ausführen pro Minute reicht)") ?></option>
-                <option value="0"<?= !$hook->isNew() && !$hook['cronjob'] ? " selected" : "" ?>><?= _("Hoch (sofort ausführen)") ?></option>
-            </select>
-        </label>
+        <? if (Config::get()->CRONJOBS_ENABLE) : ?>
+            <? if (!Config::get()->HOOKS_FORCE_CRONJOBS) : ?>
+                <label>
+                    <?= _("Priorität") ?>
+                    <select name="data[cronjob]">
+                        <option value="1"<?= $hook->isNew() || $hook['cronjob'] ? " selected" : "" ?>><?= _("Gering (einmal ausführen pro Minute reicht)") ?></option>
+                        <option value="0"<?= !$hook->isNew() && !$hook['cronjob'] ? " selected" : "" ?>><?= _("Hoch (sofort ausführen)") ?></option>
+                    </select>
+                </label>
+            <? else : ?>
+                <input type="hidden" name="data[cronjob]" value="1">
+            <? endif ?>
+        <? else : ?>
+            <input type="hidden" name="data[cronjob]" value="0">
+        <? endif ?>
 
         <label>
             <input type="checkbox" name="data[activated]" value="1"<?= $hook['activated'] || $hook->isNew() ? " checked" : "" ?>>

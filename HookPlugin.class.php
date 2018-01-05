@@ -61,7 +61,7 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin
                     $ifhook = new $hook['if_type']();
                     $parameters = $ifhook->check($hook, "NotificationCenter", $event, $object);
                     if (is_array($parameters)) {
-                        if ($hook['cronjob']) {
+                        if (($hook['cronjob'] || Config::get()->HOOKS_FORCE_CRONJOBS) && Config::get()->CRONJOBS_ENABLE) {
                             $queue_entry = new HookQueue();
                             $queue_entry['hook_id'] = $hook->getId();
                             $queue_entry['parameters'] = $parameters;

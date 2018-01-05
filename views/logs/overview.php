@@ -36,7 +36,7 @@
         <? else : ?>
             <tr>
                 <td colspan="100">
-                    <?= _("Es existieren keine Logeinträge. Beachten Sie, dass Logeinträge werden nach maximal zwei Wochen gelöscht werden.") ?>
+                    <?= _("Es existieren keine Logeinträge. Beachten Sie, dass Logeinträge nach maximal zwei Wochen gelöscht werden.") ?>
                 </td>
             </tr>
         <? endif ?>

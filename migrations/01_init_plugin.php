@@ -12,7 +12,7 @@ class InitPlugin extends Migration
 {
     function up() {
         DBManager::get()->exec("
-            CREATE TABLE `hooks` (
+            CREATE TABLE IF NOT EXISTS `hooks` (
                 `hook_id` varchar(32) NOT NULL DEFAULT '',
                 `name` varchar(128) NOT NULL DEFAULT '',
                 `activated` tinyint(4) DEFAULT '1',
@@ -30,7 +30,7 @@ class InitPlugin extends Migration
             ) ENGINE=InnoDB;
         ");
         DBManager::get()->exec("
-            CREATE TABLE `hooks_log` (
+            CREATE TABLE IF NOT EXISTS `hooks_log` (
                 `log_id` varchar(32) NOT NULL DEFAULT '',
                 `hook_id` varchar(32) NOT NULL DEFAULT '',
                 `log_text` text NOT NULL,
@@ -41,7 +41,7 @@ class InitPlugin extends Migration
             ) ENGINE=InnoDB;
         ");
         DBManager::get()->exec("
-            CREATE TABLE `hooks_queue` (
+            CREATE TABLE IF NOT EXISTS `hooks_queue` (
                 `hook_queue_id` varchar(32) NOT NULL DEFAULT '',
                 `hook_id` varchar(32) DEFAULT NULL,
                 `parameters` text,
