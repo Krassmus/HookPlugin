@@ -37,15 +37,29 @@ class IfMessageHook implements IfHook {
         }
         $adressees = $message->receivers->pluck("user_id");
         if (in_array($hook['user_id'], $adressees)) {
-            return array(
-                'von_id' => $message['autor_id'],
-                'von_name' => $message['autor_id'] === "___system___" ? "System" : User::find($message['autor_id'])->getFullName(),
-                'von_mail' => $message['autor_id'] === "___system___" ? "System" : User::find($message['autor_id'])->email,
-                'betreff' => $message['subject'],
-                'nachricht' => $message['message']
-            );
-        } else {
-            return false;
+            if ($hook['if_settings']['tag_filter']) {
+                $statement = DBManager::get()->prepare("
+                    SELECT tag 
+                    FROM message_tags 
+                    WHERE message_id = :message_id 
+                        AND user_id = :user_id
+                ");
+                $statement->execute(array(
+                    'message_id' => $message->getId(),
+                    'user_id' => $hook['user_id']
+                ));
+                $tags = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+            }
+            if (!$hook['if_settings']['tag_filter'] || in_array($hook['if_settings']['tag_filter'], $tags)) {
+                return array(
+                    'von_id' => $message['autor_id'],
+                    'von_name' => $message['autor_id'] === "___system___" ? "System" : User::find($message['autor_id'])->getFullName(),
+                    'von_mail' => $message['autor_id'] === "___system___" ? "System" : User::find($message['autor_id'])->email,
+                    'betreff' => $message['subject'],
+                    'nachricht' => $message['message']
+                );
+            }
         }
+        return false;
     }
 }

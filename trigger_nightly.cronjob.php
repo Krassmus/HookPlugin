@@ -1,13 +1,13 @@
 <?php
 
-class TriggerQueueJob extends CronJob
+class TriggerNightlyJob extends CronJob
 {
     /**
      * Returns the name of the cronjob.
      */
     public static function getName()
     {
-        return _('Wenn/Dann-Plugin: Löst die Hook-Queue per Cronjob aus.');
+        return _('Wenn/Dann-Plugin: Aufgaben, die einmal in der Nacht ausgeführt werden sollen.');
     }
 
     /**
@@ -15,7 +15,7 @@ class TriggerQueueJob extends CronJob
      */
     public static function getDescription()
     {
-        return _('Wenn ein Wenn/Dann eine niedrige Priorität hat, wird der Hook in einer Queue gespeichert. Dieser Cronjob führt die Hooks in der Queue der Reihe nach aus.');
+        return _('Wenn ein Wenn/Dann im Wenn-Teil stehen hat, dass er einmal in der Nacht ausgeführt werden soll, so muss dieser Cronjob ihn anstoßen.');
     }
 
     public function setUp() {
@@ -49,18 +49,24 @@ class TriggerQueueJob extends CronJob
      */
     public function execute($last_result, $parameters = array())
     {
-        $queue_entries = HookQueue::findBySQL("1=1 ORDER BY mkdate ASC LIMIT 100");
-        foreach ($queue_entries as $queue_entry) {
-            $hook = Hook::find($queue_entry['hook_id']);
-            $then = new $hook['then_type']();
-            $output = $then->perform($hook, $queue_entry->parameters);
+        $hooks = Hook::findBySQL("if_type = 'IfNightlyHook' ORDER BY RAND()");
+        foreach ($hooks as $hook) {
+            $minutes_after_midnight = floor((time() - mktime($hour = 0, $minute = 0, $second = 0, null, null, null)) / 60);
+            if ((($hook['if_settings']['minutes_after_midnight'] <= $minutes_after_midnight) || (time() - $hook['if_settings']['last_execution'] > 37 * 60 * 60))
+                    && $minutes_after_midnight < 60 * 7) {
+                //only between 0 and 7 AM and only if it's either late enough or cronjob didn't start last night.
+                $then = new $hook['then_type']();
+                $output = $then->perform($hook, array());
 
-            $log = new HookLog();
-            $log['log_text'] = $output;
-            $log['user_id'] = $queue_entry['user_id'];
-            $log['hook_id'] = $hook->getId();
-            $log->store();
-            $queue_entry->delete();
+                $hook['if_settings']['last_execution'] = time();
+                $hook->store();
+
+                $log = new HookLog();
+                $log['log_text'] = $output;
+                $log['user_id'] = "IfNightlyHook";
+                $log['hook_id'] = $hook->getId();
+                $log->store();
+            }
         }
         HookLog::cleanUpLog();
     }

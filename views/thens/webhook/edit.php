@@ -56,7 +56,7 @@
     <tfoot>
         <tr>
             <td colspan="100">
-                <a href="#" onClick="jQuery('table.default.json tbody > tr:last-child').clone().appendTo('table.default.json tbody').find('input').val(''); return false;">
+                <a href="#" onClick="jQuery('table.default.json tbody > tr:last-child').clone().appendTo('table.default.json tbody').find('input, textarea').val(''); return false;">
                     <?= Icon::create("add", "clickable")->asImg(20) ?>
                 </a>
             </td>
