@@ -19,6 +19,7 @@ class TriggerQueueJob extends CronJob
     }
 
     public function setUp() {
+        require_once 'lib/visual.inc.php';
         require_once __DIR__."/HookPlugin.class.php";
     }
 
