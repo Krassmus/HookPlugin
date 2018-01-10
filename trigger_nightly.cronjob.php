@@ -19,21 +19,7 @@ class TriggerNightlyJob extends CronJob
     }
 
     public function setUp() {
-        require_once __DIR__."/lib/Hook.php";
-        require_once __DIR__."/lib/HookLog.php";
-        require_once __DIR__."/lib/HookQueue.php";
-        require_once __DIR__."/lib/IfHook.interface.php";
-        require_once __DIR__."/lib/ThenHook.interface.php";
-        foreach (scandir(__DIR__."/lib/if_hooks") as $file) {
-            if ($file[0] !== ".") {
-                include_once __DIR__."/lib/if_hooks/".$file;
-            }
-        }
-        foreach (scandir(__DIR__."/lib/then_hooks") as $file) {
-            if ($file[0] !== ".") {
-                include_once __DIR__."/lib/then_hooks/".$file;
-            }
-        }
+        require_once __DIR__."/HookPlugin.class.php";
     }
 
     /**
