@@ -39,14 +39,14 @@ class TriggerNightlyJob extends CronJob
         $hooks = Hook::findBySQL("if_type = 'IfNightlyHook' ORDER BY RAND()");
         foreach ($hooks as $hook) {
             $minutes_after_midnight = floor((time() - mktime($hour = 0, $minute = 0, $second = 0)) / 60);
-            echo "Plan in Minuten nach Mitternacht: ";
             if ((($hook['if_settings']['minutes_after_midnight'] <= $minutes_after_midnight) || (time() - (int) $hook['if_settings']['last_execution'] > 37 * 60 * 60))
-                    && (true || $minutes_after_midnight < 60 * 7)) {
+                    && ($minutes_after_midnight < 60 * 7)) {
                 //only between 0 and 7 AM and only if it's either late enough or cronjob didn't start last night.
                 $then = new $hook['then_type']();
                 $output = $then->perform($hook, array());
 
                 $hook['if_settings']['last_execution'] = time();
+                $hook['last_triggered'] = time();
                 $hook->store();
 
                 $log = new HookLog();
