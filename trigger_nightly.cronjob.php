@@ -37,25 +37,28 @@ class TriggerNightlyJob extends CronJob
     public function execute($last_result, $parameters = array())
     {
         $hooks = Hook::findBySQL("if_type = 'IfNightlyHook' ORDER BY RAND()");
-        foreach ($hooks as $hook) {
-            $minutes_after_midnight = floor((time() - mktime($hour = 0, $minute = 0, $second = 0)) / 60);
-            if ((($hook['if_settings']['minutes_after_midnight'] <= $minutes_after_midnight) || (time() - (int) $hook['if_settings']['last_execution'] > 37 * 60 * 60))
-                    && ($minutes_after_midnight < 60 * 7)) {
-                //only between 0 and 7 AM and only if it's either late enough or cronjob didn't start last night.
-                $then = new $hook['then_type']();
-                $output = $then->perform($hook, array());
+        $minutes_after_midnight = floor((time() - mktime($hour = 0, $minute = 0, $second = 0)) / 60);
+        if ($minutes_after_midnight < 60 * 7) {
+            foreach ($hooks as $hook) {
+                if (((($hook['if_settings']['minutes_after_midnight'] <= $minutes_after_midnight)
+                            && (time() - (int) $hook['if_settings']['last_execution'] > 60 * 60 * 8))
+                        || (time() - (int) $hook['if_settings']['last_execution'] > 37 * 60 * 60))) {
+                    //only between 0 and 7 AM and only if it's either late enough or cronjob didn't start last night.
+                    $then = new $hook['then_type']();
+                    $output = $then->perform($hook, array());
 
-                $hook['if_settings']['last_execution'] = time();
-                $hook['last_triggered'] = time();
-                $hook->store();
+                    $hook['if_settings']['last_execution'] = time();
+                    $hook['last_triggered'] = time();
+                    $hook->store();
 
-                $log = new HookLog();
-                $log['log_text'] = $output;
-                $log['user_id'] = "IfNightlyHook";
-                $log['hook_id'] = $hook->getId();
-                $log->store();
+                    $log = new HookLog();
+                    $log['log_text'] = $output;
+                    $log['user_id'] = "IfNightlyHook";
+                    $log['hook_id'] = $hook->getId();
+                    $log->store();
+                }
             }
+            HookLog::cleanUpLog();
         }
-        HookLog::cleanUpLog();
     }
 }
