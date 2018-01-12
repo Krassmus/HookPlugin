@@ -27,8 +27,11 @@ class IfErrorOccursHook implements IfHook {
 
     public function findHooksByObject($object)
     {
+        if (!$object['exception']) {
+            return array();
+        }
         $object->hook->user_id;
-        return Hook::findBySQL("user_id = ? AND if_type = '' ", array(
+        return Hook::findBySQL("user_id = ? AND if_type = ? ", array(
             $object->hook->user_id,
             get_class($this)
         ));

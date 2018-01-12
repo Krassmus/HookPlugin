@@ -13,11 +13,11 @@
             <? foreach ($hooks as $hook) : ?>
                 <tr>
                     <td>
-                        <? if ($hook['activated']) : ?>
-                            <?= Icon::create("checkbox-checked", "info")->asImg(20) ?>
-                        <? else : ?>
-                            <?= Icon::create("checkbox-unchecked", "info")->asImg(20) ?>
-                        <? endif ?>
+                        <a href="#" class="active_indicator <?= $hook['activated'] ? "activated" : "" ?>"
+                           onClick="jQuery.post(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/hookplugin/hooks/toggle/<?= $hook->getId() ?>'); jQuery(this).toggleClass('activated');">
+                            <?= Icon::create("checkbox-checked", "clickable")->asImg(20, array('class' => "checked")) ?>
+                            <?= Icon::create("checkbox-unchecked", "info")->asImg(20, array('class' => "unchecked")) ?>
+                        </a>
                     </td>
                     <td>
                         <? $last_log_entry = HookLog::findOneBySQL("hook_id = ? ORDER BY mkdate DESC LIMIT 1", array($hook->getId())) ?>
@@ -71,6 +71,18 @@
         <? endif ?>
     </tbody>
 </table>
+
+<style>
+    .active_indicator .checked {
+        display: none;
+    }
+    .active_indicator.activated .unchecked {
+        display: none;
+    }
+    .active_indicator.activated .checked {
+        display: inline-block;
+    }
+</style>
 
 <?
 $actions = new ActionsWidget();

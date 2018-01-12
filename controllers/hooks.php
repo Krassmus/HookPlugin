@@ -71,4 +71,16 @@ class HooksController extends PluginController {
         $this->render_text($template->render());
     }
 
+    public function toggle_action($hook_id) {
+        $this->hook = new Hook($hook_id);
+        if (!$this->hook->isNew() && $this->hook['user_id'] !== $GLOBALS['user']->id) {
+            throw new AccessDeniedException();
+        }
+        if (Request::isPost()) {
+            $this->hook['activated'] = !$this->hook['activated'];
+            $this->hook->store();
+        }
+        $this->render_text("ok");
+    }
+
 }
