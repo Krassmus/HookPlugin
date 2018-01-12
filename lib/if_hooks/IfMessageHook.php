@@ -19,7 +19,14 @@ class IfMessageHook implements IfHook {
 
     public function findHooksByObject($object)
     {
-        return Hook::findBySQL("INNER JOIN message_user USING (user_id) WHERE message_user.message_id = ? AND if_type = ? AND activated = '1' AND message_user.user_id = ? ", array(is_string($object) ? $object : $object->getId(), get_class($this)));
+        return Hook::findBySQL("
+            INNER JOIN message_user USING (user_id) 
+            WHERE message_user.message_id = ? 
+                AND if_type = ? 
+                AND activated = '1' ", array(
+            is_string($object) ? $object : $object->getId(),
+            get_class($this)
+        ));
     }
 
     public function getEditTemplate(Hook $hook)
