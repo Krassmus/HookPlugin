@@ -46,6 +46,10 @@ class HooksController extends PluginController {
         if (!$this->hook->isNew() && $this->hook['user_id'] !== $GLOBALS['user']->id) {
             throw new AccessDeniedException();
         }
+        if (!$ifhook || !class_exists($ifhook)) {
+            $this->render_nothing();
+            return;
+        }
         $ifhook = new $ifhook();
         if (!is_a($ifhook, "IfHook")) {
             throw new Exception("Falscher Hook-Name");
@@ -62,6 +66,10 @@ class HooksController extends PluginController {
         $this->hook = new Hook($hook_id);
         if (!$this->hook->isNew() && $this->hook['user_id'] !== $GLOBALS['user']->id) {
             throw new AccessDeniedException();
+        }
+        if (!$thenhook || !class_exists($thenhook)) {
+            $this->render_nothing();
+            return;
         }
         $thenhook = new $thenhook();
         if (!is_a($thenhook, "ThenHook")) {
