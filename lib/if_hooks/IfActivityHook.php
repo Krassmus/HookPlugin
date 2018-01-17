@@ -55,13 +55,18 @@ class IfActivityHook implements IfHook {
     public function check(Hook $hook, $type, $event, $activity)
     {
         if (($hook['user_id'] !== $activity['actor_id']) || !$hook['if_settings']['notmine']) {
-            $activity_array = $activity->toRawArray();
+            $activity_array = $activity->toArray();
+            $url = "";
+            foreach ($activity['object_url'] as $u => $d) {
+                $url = $u;
+                break;
+            }
             return array(
                 'text' => $activity_array["content"],
                 'verb' => $activity["verb"],
                 'user_id' => $activity["actor_id"],
                 'name' => User::find($activity["actor_id"])->getFullName(),
-                'url' => $activity['object_url']
+                'url' => $url
             );
         } else {
             return false;

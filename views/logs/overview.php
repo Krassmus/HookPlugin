@@ -12,11 +12,13 @@
             <? foreach ($logs as $log) : ?>
                 <tr>
                     <td>
-                        <? if (!$log['exception']) : ?>
-                            <?= Icon::create("accept", "status-green")->asImg(20) ?>
-                        <? else : ?>
-                            <?= Icon::create("decline", "status-red")->asImg(20) ?>
-                        <? endif ?>
+                        <a href="<?= PluginEngine::getLink($plugin, array(), "logs/details/".$log->getId()) ?>" data-dialog>
+                            <? if (!$log['exception']) : ?>
+                                <?= Icon::create("accept", "status-green")->asImg(20) ?>
+                            <? else : ?>
+                                <?= Icon::create("decline", "status-red")->asImg(20) ?>
+                            <? endif ?>
+                        </a>
                     </td>
                     <td>
                         <a href="<?= PluginEngine::getLink($plugin, array(), "logs/details/".$log->getId()) ?>" data-dialog>

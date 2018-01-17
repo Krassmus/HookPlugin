@@ -48,6 +48,9 @@ class TriggerQueueJob extends CronJob
             $log['hook_id'] = $hook->getId();
             $log->store();
             $queue_entry->delete();
+
+            $hook['last_triggered'] = time();
+            $hook->store();
         }
         HookLog::cleanUpLog();
     }
