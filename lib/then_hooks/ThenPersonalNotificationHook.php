@@ -19,7 +19,7 @@ class ThenPersonalNotificationHook implements ThenHook {
             $hook['user_id'],
             HookPlugin::formatTextTemplate($hook['then_settings']['url'], $parameters),
             $text,
-            null,
+            "",
             HookPlugin::formatTextTemplate($hook['then_settings']['avatar'], $parameters) ?: $GLOBALS['ABSOLUTE_URI_STUDIP']."plugins_packages/RasmusFuhse/HookPlugin/assets/webhook_blue.svg",
             $hook['then_settings']['dialog']
         );
