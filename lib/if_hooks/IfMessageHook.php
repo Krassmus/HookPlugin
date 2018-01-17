@@ -19,8 +19,7 @@ class IfMessageHook implements IfHook {
 
     public function findHooksByObject($object)
     {
-        return Hook::findBySQL("
-            INNER JOIN message_user USING (user_id) 
+        return Hook::findBySQL("INNER JOIN message_user USING (user_id) 
             WHERE message_user.message_id = ? 
                 AND if_type = ? 
                 AND activated = '1' ", array(

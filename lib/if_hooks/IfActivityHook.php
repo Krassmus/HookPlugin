@@ -41,6 +41,14 @@ class IfActivityHook implements IfHook {
                     get_class($this),
                     $object['context_id']
                 ));
+            case "institute":
+                return Hook::findBySQL("INNER JOIN user_inst USING (user_id) 
+                    WHERE if_type = ? 
+                    AND activated = '1'
+                    AND user_inst.Institut_id = ?", array(
+                    get_class($this),
+                    $object['context_id']
+                ));
             case "user":
                 return Hook::findBySQL("if_type = ? 
                     AND activated = '1'
@@ -49,7 +57,7 @@ class IfActivityHook implements IfHook {
                     $object['context_id']
                 ));
         }
-
+        return array();
     }
 
     public function check(Hook $hook, $type, $event, $activity)
