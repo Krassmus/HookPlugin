@@ -18,25 +18,44 @@ class ThenWebHook implements ThenHook {
 
         $header[] = "Content-Type: application/json";
 
+        foreach ($hook['then_settings']['header']['keys'] as $i => $key) {
+            if (strpos($key, "\n") !== false) {
+                $key = preg_split("/\r?\n/", $key);
+                $key = implode("\n\t". $key);
+            }
+            $header[] = $i.": " . $key;
+        }
+
         $r = curl_init();
         curl_setopt($r, CURLOPT_URL, $hook['then_settings']['webhook_url']);
         curl_setopt($r, CURLOPT_POST, true);
         curl_setopt($r, CURLOPT_HTTPHEADER, $header);
         curl_setopt($r, CURLOPT_RETURNTRANSFER, true);
 
-        $payload = array();
-        foreach ($hook['then_settings']['json']['keys'] as $i => $key) {
-            if (trim($key)) {
-                $value = HookPlugin::formatTextTemplate($hook['then_settings']['json']['values'][$i], $parameters);
-                $payload[$key] = $value;
-            }
+        if ($hook['then_settings']['json']) {
+            $payload = json_decode($hook['then_settings']['json']);
+            $payload = $this->recursiveTemplatize($payload, $parameters);
+            $payload = json_encode($payload);
         }
 
-        curl_setopt($r, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($r, CURLOPT_POSTFIELDS, $payload);
 
         $result = curl_exec($r);
         curl_close($r);
         $output = "Payload: ".json_encode($payload)."\n\nAntwort vom Server: ".$result;
         return $output;
+    }
+
+    protected function recursiveTemplatize($value, $parameters) {
+        if (is_array($value)) {
+            foreach ($value as $key => $v) {
+                $key = HookPlugin::formatTextTemplate($key, $parameters);
+                $v = $this->recursiveTemplatize($v, $parameters);
+                $value[$key] = $v;
+            }
+            return $value;
+        } else {
+            return HookPlugin::formatTextTemplate($value, $parameters);
+        }
     }
 }

@@ -1,0 +1,1 @@
+<?= _("Wenn ein Blubber geschrieben wurde, den ich lesen darf.") ?>

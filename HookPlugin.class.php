@@ -15,9 +15,19 @@ foreach (scandir(__DIR__."/lib/then_hooks") as $file) {
         include_once __DIR__."/lib/then_hooks/".$file;
     }
 }
+require_once __DIR__."/lib/HooksRouteMap.php";
 
-class HookPlugin extends StudIPPlugin implements SystemPlugin
+class HookPlugin extends StudIPPlugin implements SystemPlugin, RESTAPIPlugin
 {
+
+    public function getRouteMaps()
+    {
+        return [
+            new HooksRouteMap(),
+        ];
+    }
+
+
     static public function formatTextTemplate($text, $parameters) {
         foreach ($parameters as $parameter => $value) {
             $text = str_replace("{{".$parameter."}}", $value, $text);

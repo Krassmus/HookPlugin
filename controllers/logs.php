@@ -18,6 +18,9 @@ class LogsController extends PluginController {
         Navigation::activateItem("/tools/hooks");
         PageLayout::setTitle(_("Log Details"));
         $this->log = new HookLog($log_id);
+        if (!$this->log->hook["editable"]) {
+            throw new AccessDeniedException();
+        }
     }
 
 }

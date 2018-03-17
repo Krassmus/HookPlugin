@@ -16,12 +16,12 @@
                         <a href="#" class="active_indicator <?= $hook['activated'] ? "activated" : "" ?>"
                            onClick="jQuery.post(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/hookplugin/hooks/toggle/<?= $hook->getId() ?>'); jQuery(this).toggleClass('activated');">
                             <?= Icon::create("checkbox-checked", "clickable")->asImg(20, array('class' => "checked")) ?>
-                            <?= Icon::create("checkbox-unchecked", "info")->asImg(20, array('class' => "unchecked")) ?>
+                            <?= Icon::create("checkbox-unchecked", "clickable")->asImg(20, array('class' => "unchecked")) ?>
                         </a>
                     </td>
                     <td>
                         <? $last_log_entry = HookLog::findOneBySQL("hook_id = ? ORDER BY mkdate DESC LIMIT 1", array($hook->getId())) ?>
-                        <? if ($last_log_entry && $last_log_entry['exception']) : ?>
+                        <? if ($last_log_entry && $last_log_entry['exception'] && $hook['editable']) : ?>
                             <a href="<?= PluginEngine::getLink($plugin, array(), "logs/details/".$last_log_entry->getId()) ?>"
                                data-dialog
                                title="<?= _("Fehler beim letzten Ausführen. Schauen Sie in die Details des Logs.") ?>">
@@ -39,13 +39,17 @@
                         <?= $hook['last_triggered'] ? date("j.n.Y G:i", $hook['last_triggered']) : "-" ?>
                     </td>
                     <td class="actions">
-                        <a href="<?= PluginEngine::getLink($plugin, array(), "hooks/edit/".$hook->getId()) ?>" data-dialog>
-                            <?= Icon::create("edit", "clickable")->asImg(20) ?>
-                        </a>
-                        <? if ($hook['last_triggered']) : ?>
-                        <a href="<?= PluginEngine::getLink($plugin, array(), "logs/overview/".$hook->getId()) ?>" data-dialog>
-                            <?= Icon::create("log", "clickable")->asImg(20) ?>
-                        </a>
+                        <? if ($hook['editable']) : ?>
+                            <a href="<?= PluginEngine::getLink($plugin, array(), "hooks/edit/".$hook->getId()) ?>" data-dialog>
+                                <?= Icon::create("edit", "clickable")->asImg(20) ?>
+                            </a>
+                        <? else : ?>
+                            <?= Icon::create("edit", "inactive")->asImg(20, array('title' => _("Dieser Hook kann nicht bearbeitet, sondern nur deaktiviert oder gelöscht werden."))) ?>
+                        <? endif ?>
+                        <? if ($hook['last_triggered'] && $hook['editable']) : ?>
+                            <a href="<?= PluginEngine::getLink($plugin, array(), "logs/overview/".$hook->getId()) ?>" data-dialog>
+                                <?= Icon::create("log", "clickable")->asImg(20) ?>
+                            </a>
                         <? else : ?>
                             <?= Icon::create("log", "inactive")->asImg(20) ?>
                         <? endif ?>

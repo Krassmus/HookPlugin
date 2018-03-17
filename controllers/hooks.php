@@ -17,6 +17,9 @@ class HooksController extends PluginController {
         if (!$this->hook->isNew() && $this->hook['user_id'] !== $GLOBALS['user']->id) {
             throw new AccessDeniedException();
         }
+        if (!$this->hook->isNew() && !$this->hook["editable"]) {
+            throw new AccessDeniedException();
+        }
         if (Request::isPost()) {
             $data = Request::getArray("data");
             $data['activated'] = (int) $data['activated'];
@@ -46,6 +49,9 @@ class HooksController extends PluginController {
         if (!$this->hook->isNew() && $this->hook['user_id'] !== $GLOBALS['user']->id) {
             throw new AccessDeniedException();
         }
+        if (!$this->hook->isNew() && !$this->hook["editable"]) {
+            throw new AccessDeniedException();
+        }
         if (!$ifhook || !class_exists($ifhook)) {
             $this->render_nothing();
             return;
@@ -65,6 +71,9 @@ class HooksController extends PluginController {
     {
         $this->hook = new Hook($hook_id);
         if (!$this->hook->isNew() && $this->hook['user_id'] !== $GLOBALS['user']->id) {
+            throw new AccessDeniedException();
+        }
+        if (!$this->hook->isNew() && !$this->hook["editable"]) {
             throw new AccessDeniedException();
         }
         if (!$thenhook || !class_exists($thenhook)) {
