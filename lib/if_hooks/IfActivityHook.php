@@ -84,7 +84,7 @@ class IfActivityHook implements IfHook {
                 }
                 $contextclass = "Studip\\Activity\\".ucfirst($activity->context) . 'Context';
                 $contextcontainerclass = ucfirst($activity->context);
-                $context = $contextcontainerclass === "Studip\\Activity\\System"
+                $context = $contextcontainerclass === "System"
                     ? new $contextclass($provider)
                     : new $contextclass(new $contextcontainerclass($activity->context_id), $provider);
                 $context_name = $context->getContextFullname();

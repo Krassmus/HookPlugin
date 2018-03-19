@@ -10,7 +10,7 @@ class IfBlubberHook implements IfHook
 
     public function getParameters(Hook $hook)
     {
-        return array("von_id", "von_name", "nachricht", "url", "blubber_id", "thread_id");
+        return array("von_id", "von_name", "nachricht", "url", "blubber_id", "thread_id", "context_type", "context_id");
     }
 
     public function listenToNotificationEvents()
@@ -73,6 +73,8 @@ class IfBlubberHook implements IfHook
             'blubber_id' => $blubber->getId(),
             'thread_id' => $blubber['root_id'],
             'nachricht' => $blubber['description'],
+            'context_type' => $blubber['context_type'],
+            'context_id' => $blubber['Seminar_id'],
             'url' => $url
         );
     }
