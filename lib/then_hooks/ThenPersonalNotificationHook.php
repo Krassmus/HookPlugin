@@ -13,7 +13,7 @@ class ThenPersonalNotificationHook implements ThenHook {
         return $template;
     }
 
-    public function perform(Hook $hook, $parameters) {
+    public function perform(Hook $hook, $parameters, $multicurl = null) {
         $text = HookPlugin::formatTextTemplate($hook['then_settings']['text'], $parameters);
         $success = PersonalNotifications::add(
             $hook['user_id'],

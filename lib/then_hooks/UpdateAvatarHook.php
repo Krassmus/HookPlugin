@@ -13,7 +13,7 @@ class UpdateAvatarHook implements ThenHook {
         return $template;
     }
 
-    public function perform(Hook $hook, $parameters) {
+    public function perform(Hook $hook, $parameters, $multicurl = null) {
         $url = HookPlugin::formatTextTemplate($hook['then_settings']['avatar_url'], $parameters);
         $tmp_avatar = $GLOBALS['TMP_PATH']."/"."avatar_".$hook['user_id'].".jpg";
         $success = file_put_contents($tmp_avatar, file_get_contents($url));

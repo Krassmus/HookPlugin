@@ -37,10 +37,11 @@ class TriggerQueueJob extends CronJob
     public function execute($last_result, $parameters = array())
     {
         $queue_entries = HookQueue::findBySQL("1=1 ORDER BY mkdate ASC LIMIT 100");
+        $async_curl = curl_multi_init();
         foreach ($queue_entries as $queue_entry) {
             $hook = Hook::find($queue_entry['hook_id']);
             $then = new $hook['then_type']();
-            $output = $then->perform($hook, $queue_entry->parameters);
+            $output = $then->perform($hook, $queue_entry->parameters, $async_curl);
 
             $log = new HookLog();
             $log['log_text'] = $output;
@@ -52,6 +53,19 @@ class TriggerQueueJob extends CronJob
             $hook['last_triggered'] = time();
             $hook->store();
         }
+        $active = null;
+        do {
+            $mrc = curl_multi_exec($async_curl, $active);
+        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+        while ($active && $mrc == CURLM_OK) {
+            if (curl_multi_select($async_curl) != -1) {
+                do {
+                    $mrc = curl_multi_exec($async_curl, $active);
+                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+            }
+        }
+        //curl_multi_remove_handle($async_curl, $ch2);
+        curl_multi_close($async_curl);
         HookLog::cleanUpLog();
     }
 }

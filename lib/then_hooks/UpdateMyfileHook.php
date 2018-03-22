@@ -13,7 +13,7 @@ class UpdateMyfileHook implements ThenHook {
         return $template;
     }
 
-    public function perform(Hook $hook, $parameters) {
+    public function perform(Hook $hook, $parameters, $multicurl = null) {
         $fileref = new FileRef($hook['then_settings']['fileref_id']);
 
         $url = HookPlugin::formatTextTemplate($hook['then_settings']['url'], $parameters);

@@ -31,7 +31,7 @@ class ThenTelegramHook implements ThenHook {
         return $template;
     }
 
-    public function perform(Hook $hook, $parameters) {
+    public function perform(Hook $hook, $parameters, $multicurl = null) {
         if ($hook['then_settings']['chat_id']) {
             $header = array();
 

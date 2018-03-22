@@ -13,7 +13,7 @@ class EmailHook implements ThenHook {
         return $template;
     }
 
-    public function perform(Hook $hook, $parameters) {
+    public function perform(Hook $hook, $parameters, $multicurl = null) {
         $subject = HookPlugin::formatTextTemplate($hook['then_settings']['subject'], $parameters);
         $body = HookPlugin::formatTextTemplate($hook['then_settings']['body'], $parameters);
         StudipMail::sendMessage(

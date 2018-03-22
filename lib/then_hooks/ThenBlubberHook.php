@@ -14,7 +14,7 @@ class ThenBlubberHook implements ThenHook {
         return $template;
     }
 
-    public function perform(Hook $hook, $parameters) {
+    public function perform(Hook $hook, $parameters, $multicurl = null) {
         $maximum = 5;
 
         $history = $hook['then_settings']['public_history'] ? $hook['then_settings']['public_history']->getArrayCopy() : array();

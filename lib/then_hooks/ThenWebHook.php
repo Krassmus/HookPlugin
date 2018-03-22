@@ -13,7 +13,7 @@ class ThenWebHook implements ThenHook {
         return $template;
     }
 
-    public function perform(Hook $hook, $parameters) {
+    public function perform(Hook $hook, $parameters, $multicurl = null) {
         $header = array();
 
         $header[] = "Content-Type: application/json";

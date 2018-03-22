@@ -23,5 +23,5 @@ interface ThenHook {
      * @param array $parameters
      * @return null|string : write something to the log. Do this if performing was successful. If it was unsuccessful it is recommended to throw an Exception with fitting message.
      */
-    public function perform(Hook $hook, $parameters);
+    public function perform(Hook $hook, $parameters, $multicurl = null);
 }
