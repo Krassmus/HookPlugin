@@ -65,6 +65,8 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin, RESTAPIPlugin
                 }
             }
         }
+        $async_curl = curl_multi_init();
+        $curl_handles = array();
         foreach ($hooks as $hook) {
             if ($hook['activated']) {
                 try {
@@ -79,7 +81,11 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin, RESTAPIPlugin
                             $queue_entry->store();
                         } else {
                             $then = new $hook['then_type']();
-                            $output = $then->perform($hook, $parameters);
+                            $output = $then->perform($hook, $parameters, $async_curl);
+                            if (is_resource($output)) {
+                                $curl_handles[] = $output;
+                                $output = "curl_multi_init";
+                            }
                             $hook['last_triggered'] = time();
                             $hook->store();
 
@@ -103,5 +109,21 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin, RESTAPIPlugin
                 }
             }
         }
+
+        $active = null;
+        do {
+            $mrc = curl_multi_exec($async_curl, $active);
+        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+        while ($active && $mrc == CURLM_OK) {
+            if (curl_multi_select($async_curl) != -1) {
+                do {
+                    $mrc = curl_multi_exec($async_curl, $active);
+                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+            }
+        }
+        foreach ($curl_handles as $handle) {
+            curl_multi_remove_handle($async_curl, $handle);
+        }
+        curl_multi_close($async_curl);
     }
 }

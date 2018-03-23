@@ -74,6 +74,10 @@ class HooksRouteMap extends RESTAPI\RouteMap
         if ($this->data['editable'] !== null) {
             $this->hook['editable'] = $this->data['editable'];
         }
+        $consumer = RESTAPI\Consumer\Base::detectConsumer();
+        if ($consumer && $consumer->getId()) {
+            $this->hook['consumer_id'] = $consumer->getId();
+        }
         $this->hook->store();
 
         return $this->hook->toArray();
@@ -104,6 +108,11 @@ class HooksRouteMap extends RESTAPI\RouteMap
         $this->hook['then_type'] = Request::get("then_type");
         $this->hook['then_settings'] = Request::getArray("then_settings");
         $this->hook['editable'] = Request::int("editable", 1);
+        $consumer = RESTAPI\Consumer\Base::detectConsumer();
+        if ($consumer && $consumer->getId()) {
+            $this->hook['consumer_id'] = $consumer->getId();
+        }
+
         $this->hook->store();
 
         return $this->hook->toArray();

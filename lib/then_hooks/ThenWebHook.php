@@ -40,10 +40,15 @@ class ThenWebHook implements ThenHook {
 
         curl_setopt($r, CURLOPT_POSTFIELDS, $payload);
 
-        $result = curl_exec($r);
-        curl_close($r);
-        $output = "Payload: ".json_encode($payload)."\n\nAntwort vom Server: ".$result;
-        return $output;
+        if ($multicurl) {
+            curl_multi_add_handle($multicurl, $r);
+            return $r;
+        } else {
+            $result = curl_exec($r);
+            curl_close($r);
+            $output = "Payload: " . json_encode($payload) . "\n\nAntwort vom Server: " . $result;
+            return $output;
+        }
     }
 
     protected function recursiveTemplatize($value, $parameters) {
