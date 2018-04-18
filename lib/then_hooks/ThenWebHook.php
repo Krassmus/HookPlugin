@@ -33,10 +33,11 @@ class ThenWebHook implements ThenHook {
         curl_setopt($r, CURLOPT_RETURNTRANSFER, true);
 
         if ($hook['then_settings']['json']) {
-            $payload = json_decode($hook['then_settings']['json']);
+            $payload = json_decode($hook['then_settings']['json'], true);
             $payload = $this->recursiveTemplatize($payload, $parameters);
             $payload = json_encode($payload);
         }
+
 
         curl_setopt($r, CURLOPT_POSTFIELDS, $payload);
 

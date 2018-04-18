@@ -15,7 +15,7 @@ class IfFilerefHook implements IfHook
 
     public function listenToNotificationEvents()
     {
-        return array("FileRefDidCreate", "FileRefDidStore", "FoldertypeShowsUp");
+        return array("FileRefDidCreate"); // "FoldertypeShowsUp" for TimedFolders ?
     }
 
     public function findHooksByObject($object)

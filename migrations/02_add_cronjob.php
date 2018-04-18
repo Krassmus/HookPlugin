@@ -42,7 +42,7 @@ class AddCronjob extends Migration
         ));
 
         Config::get()->create("HOOKS_FORCE_CRONJOBS", array(
-            'value' => 0,
+            'value' => 1,
             'type' => "boolean",
             'range' => "global",
             'section' => "HOOKPLUGIN"

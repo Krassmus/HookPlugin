@@ -15,7 +15,7 @@ class AddNoneditableHooks extends Migration
     {
         DBManager::get()->exec("
             ALTER TABLE `hooks` 
-            DROP COLUMN IF EXISTS `editable`;
+            DROP COLUMN `editable`;
         ");
         SimpleORMap::expireTableScheme();
     }

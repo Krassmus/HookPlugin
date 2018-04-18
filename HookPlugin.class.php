@@ -48,7 +48,7 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin, RESTAPIPlugin
     public function __construct()
     {
         parent::__construct();
-        if (Navigation::hasItem("/tools")) {
+        if (Navigation::hasItem("/tools") && Config::get()->HOOKS_ALLOW_GUI) {
             $tooltab = new Navigation(_("Wenn/Dann"), PluginEngine::getURL($this, array(), "hooks/overview"));
             Navigation::addItem("/tools/hooks", $tooltab);
         }

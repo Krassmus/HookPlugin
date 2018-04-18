@@ -15,7 +15,7 @@ class SaveConsumer extends Migration
     {
         DBManager::get()->exec("
             ALTER TABLE `hooks` 
-            DROP COLUMN IF EXISTS `consumer_id`;
+            DROP COLUMN `consumer_id`;
         ");
         SimpleORMap::expireTableScheme();
     }
