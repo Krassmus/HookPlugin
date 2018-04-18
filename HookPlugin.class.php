@@ -48,8 +48,10 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin, RESTAPIPlugin
     public function __construct()
     {
         parent::__construct();
-        $tooltab = new Navigation(_("Wenn/Dann"), PluginEngine::getURL($this, array(), "hooks/overview"));
-        Navigation::addItem("/tools/hooks", $tooltab);
+        if (Navigation::hasItem("/tools")) {
+            $tooltab = new Navigation(_("Wenn/Dann"), PluginEngine::getURL($this, array(), "hooks/overview"));
+            Navigation::addItem("/tools/hooks", $tooltab);
+        }
         NotificationCenter::addObserver($this, "checkHooksToTrigger", NULL);
         NotificationCenter::addObserver($this, "checkHooksToTrigger", "MessageDidCreate");
     }
@@ -67,6 +69,7 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin, RESTAPIPlugin
         }
         $async_curl = curl_multi_init();
         $curl_handles = array();
+        $added = false;
         foreach ($hooks as $hook) {
             if ($hook['activated']) {
                 try {
@@ -83,6 +86,7 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin, RESTAPIPlugin
                             $then = new $hook['then_type']();
                             $output = $then->perform($hook, $parameters, $async_curl);
                             if (is_resource($output)) {
+                                $added = true;
                                 $curl_handles[] = $output;
                                 $output = "curl_multi_init";
                             }
@@ -110,20 +114,22 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin, RESTAPIPlugin
             }
         }
 
-        $active = null;
-        do {
-            $mrc = curl_multi_exec($async_curl, $active);
-        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
-        while ($active && $mrc == CURLM_OK) {
-            if (curl_multi_select($async_curl) != -1) {
-                do {
-                    $mrc = curl_multi_exec($async_curl, $active);
-                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+        if ($added) {
+            $active = null;
+            do {
+                $mrc = curl_multi_exec($async_curl, $active);
+            } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+            while ($active && $mrc == CURLM_OK) {
+                if (curl_multi_select($async_curl) != -1) {
+                    do {
+                        $mrc = curl_multi_exec($async_curl, $active);
+                    } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+                }
             }
+            foreach ($curl_handles as $handle) {
+                curl_multi_remove_handle($async_curl, $handle);
+            }
+            curl_multi_close($async_curl);
         }
-        foreach ($curl_handles as $handle) {
-            curl_multi_remove_handle($async_curl, $handle);
-        }
-        curl_multi_close($async_curl);
     }
 }
