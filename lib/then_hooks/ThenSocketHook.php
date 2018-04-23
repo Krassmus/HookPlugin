@@ -1,19 +1,19 @@
 <?php
 
-class ThenWebHook implements ThenHook {
+class ThenSocketHook implements ThenHook {
 
     static public function getName() {
-        return _("Webhook");
+        return _("Websocket");
     }
 
     public function getEditTemplate(Hook $hook, $attributes) {
         $tf = new Flexi_TemplateFactory(__DIR__."/../../views");
-        $template = $tf->open("thens/webhook/edit.php");
+        $template = $tf->open("thens/socket/edit.php");
         $template->hook = $hook;
         return $template;
     }
 
-    public function perform(Hook $hook, $parameters, $multicurl = null) {
+    public function perform(Hook $hook, $parameters, $socket_stream = null) {
         $header = array();
 
         $header[] = "Content-Type: application/json";
@@ -49,8 +49,8 @@ class ThenWebHook implements ThenHook {
 
         curl_setopt($r, CURLOPT_POSTFIELDS, $payload);
 
-        if ($multicurl) {
-            curl_multi_add_handle($multicurl, $r);
+        if ($socket_stream) {
+            curl_multi_add_handle($socket_stream, $r);
             return $r;
         } else {
             $result = curl_exec($r);
