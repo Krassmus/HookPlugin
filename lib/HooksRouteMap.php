@@ -36,6 +36,29 @@ class HooksRouteMap extends RESTAPI\RouteMap
     }
 
     /**
+     * @delete /hooks/:hook_id
+     *
+     * @param $hook_id : ID of the hook
+     */
+    public function deleteHookData($hook_id)
+    {
+        $this->hook = new Hook($hook_id);
+        if ($this->hook['user_id'] !== $GLOBALS['user']->id) {
+            $this->halt(403);
+        }
+        if ($this->hook->isNew()) {
+            $this->notFound();
+        }
+
+        if ($this->hook->delete()) {
+            return "ok";
+        } else {
+            $this->halt(500);
+            return;
+        }
+    }
+
+    /**
      * @put /hooks/:hook_id
      *
      * @param $hook_id : ID of the hook
@@ -89,7 +112,7 @@ class HooksRouteMap extends RESTAPI\RouteMap
     public function postHook()
     {
         $this->hook = new Hook();
-        if (!Request::get("name")) {
+        if (!$this->data['name']) {
             $this->halt(403);
         }
         if ($this->data['hook_id']) {
@@ -100,14 +123,14 @@ class HooksRouteMap extends RESTAPI\RouteMap
             }
         }
         $this->hook['user_id'] = $GLOBALS['user']->id;
-        $this->hook['name'] = Request::get("name");
-        $this->hook['activated'] = Request::int("activated", 0);
-        $this->hook['cronjob'] = Request::int("cronjob", 0);
-        $this->hook['if_type'] = Request::get("if_type");
-        $this->hook['if_settings'] = Request::getArray("if_settings");
-        $this->hook['then_type'] = Request::get("then_type");
-        $this->hook['then_settings'] = Request::getArray("then_settings");
-        $this->hook['editable'] = Request::int("editable", 1);
+        $this->hook['name'] = $this->data['name'];
+        $this->hook['activated'] = $this->data['activated'] ? 1 : 0;
+        $this->hook['cronjob'] = $this->data['activated'] ? 1 : 0;
+        $this->hook['if_type'] = $this->data['if_type'];
+        $this->hook['if_settings'] = $this->data['if_settings'];
+        $this->hook['then_type'] = $this->data['then_type'];
+        $this->hook['then_settings'] = $this->data['then_settings'];
+        $this->hook['editable'] = $this->data['editable'] ? 1 : 0;
         $consumer = RESTAPI\Consumer\Base::detectConsumer();
         if ($consumer && $consumer->getId()) {
             $this->hook['consumer_id'] = $consumer->getId();
