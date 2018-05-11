@@ -10,9 +10,14 @@ class HooksRouteMap extends RESTAPI\RouteMap
         $this->hooks = Hook::findBySQL("user_id = ?", array($GLOBALS['user']->id));
         $output = array();
         foreach ($this->hooks as $hook) {
-            $output[] = $hook->toArray();
+            $data = $hook->toArray();
+            $data['activated'] = (bool) $data['activated'];
+            $data['cronjob'] = (bool) $data['cronjob'];
+            $data['editable'] = (bool) $data['editable'];
+            $data['chdate'] = (int) $data['chdate'];
+            $data['mkdate'] = (int) $data['mkdate'];
+            $output[] = $data;
         }
-        $hook_ids = array_map(function ($hook) { return $hook->getId(); }, $this->hooks);
 
         return $output;
     }
@@ -32,7 +37,13 @@ class HooksRouteMap extends RESTAPI\RouteMap
             $this->notFound();
         }
 
-        return $this->hook->toArray();
+        $data = $this->hook->toArray();
+        $data['activated'] = (bool) $data['activated'];
+        $data['cronjob'] = (bool) $data['cronjob'];
+        $data['editable'] = (bool) $data['editable'];
+        $data['chdate'] = (int) $data['chdate'];
+        $data['mkdate'] = (int) $data['mkdate'];
+        return $data;
     }
 
     /**
@@ -77,10 +88,10 @@ class HooksRouteMap extends RESTAPI\RouteMap
             $this->hook['name'] = $this->data['name'];
         }
         if ($this->data['activated'] !== null) {
-            $this->hook['activated'] = $this->data['activated'];
+            $this->hook['activated'] = (int) $this->data['activated'];
         }
         if ($this->data['cronjob'] !== null) {
-            $this->hook['cronjob'] = $this->data['cronjobs'];
+            $this->hook['cronjob'] = (int) $this->data['cronjobs'];
         }
         if ($this->data['if_type'] !== null) {
             $this->hook['if_type'] = $this->data['if_type'];
@@ -95,7 +106,7 @@ class HooksRouteMap extends RESTAPI\RouteMap
             $this->hook['then_settings'] = $this->data['then_settings'];
         }
         if ($this->data['editable'] !== null) {
-            $this->hook['editable'] = $this->data['editable'];
+            $this->hook['editable'] = (int) $this->data['editable'];
         }
         $consumer = RESTAPI\Consumer\Base::detectConsumer();
         if ($consumer && $consumer->getId()) {
@@ -124,13 +135,13 @@ class HooksRouteMap extends RESTAPI\RouteMap
         }
         $this->hook['user_id'] = $GLOBALS['user']->id;
         $this->hook['name'] = $this->data['name'];
-        $this->hook['activated'] = $this->data['activated'] ? 1 : 0;
-        $this->hook['cronjob'] = $this->data['activated'] ? 1 : 0;
+        $this->hook['activated'] = (int) $this->data['activated'];
+        $this->hook['cronjob'] = (int) $this->data['cronjob'];
         $this->hook['if_type'] = $this->data['if_type'];
         $this->hook['if_settings'] = $this->data['if_settings'];
         $this->hook['then_type'] = $this->data['then_type'];
         $this->hook['then_settings'] = $this->data['then_settings'];
-        $this->hook['editable'] = $this->data['editable'] ? 1 : 0;
+        $this->hook['editable'] = (int) $this->data['editable'];
         $consumer = RESTAPI\Consumer\Base::detectConsumer();
         if ($consumer && $consumer->getId()) {
             $this->hook['consumer_id'] = $consumer->getId();

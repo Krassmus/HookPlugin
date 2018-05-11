@@ -37,17 +37,18 @@ class TriggerQueueJob extends CronJob
     public function execute($last_result, $parameters = array())
     {
         $queue_entries = HookQueue::findBySQL("1=1 ORDER BY mkdate ASC LIMIT 100");
-        $async_curl = curl_multi_init();
-        $curl_handles = array();
+
+        //Alle Deliverer einsammeln und initialisieren
+        $bulk_deliverer = array();
+        foreach (get_declared_classes() as $class) {
+            if (is_a($class, "BulkDeliverer", true)) {
+                $bulk_deliverer[$class::forThenHookType()][] = new $class();
+            }
+        }
         foreach ($queue_entries as $queue_entry) {
             $hook = Hook::find($queue_entry['hook_id']);
             $then = new $hook['then_type']();
-            $output = $then->perform($hook, $queue_entry->parameters, $async_curl);
-
-            if (is_resource($output)) {
-                $curl_handles[] = $output;
-                $output = "curl_multi_init";
-            }
+            $output = $then->perform($hook, $queue_entry->parameters, $bulk_deliverer[$hook['then_type']]);
 
             $log = new HookLog();
             $log['log_text'] = $output;
@@ -59,21 +60,13 @@ class TriggerQueueJob extends CronJob
             $hook['last_triggered'] = time();
             $hook->store();
         }
-        $active = null;
-        do {
-            $mrc = curl_multi_exec($async_curl, $active);
-        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
-        while ($active && $mrc == CURLM_OK) {
-            if (curl_multi_select($async_curl) != -1) {
-                do {
-                    $mrc = curl_multi_exec($async_curl, $active);
-                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+
+        foreach ($bulk_deliverer as $deliverer) {
+            foreach ($deliverer as $d) {
+                $d->execute();
             }
         }
-        foreach ($curl_handles as $handle) {
-            curl_multi_remove_handle($async_curl, $handle);
-        }
-        curl_multi_close($async_curl);
+
         HookLog::cleanUpLog();
     }
 }

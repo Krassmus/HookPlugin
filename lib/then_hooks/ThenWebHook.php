@@ -18,7 +18,7 @@ class ThenWebHook implements ThenHook {
 
         $header[] = "Content-Type: application/json";
 
-        foreach ($hook['then_settings']['header']['keys'] as $i => $key) {
+        foreach ((array) $hook['then_settings']['header']['keys'] as $i => $key) {
             if (strpos($key, "\n") !== false) {
                 $key = preg_split("/\r?\n/", $key);
                 $key = implode("\n\t". $key);
@@ -50,8 +50,8 @@ class ThenWebHook implements ThenHook {
         curl_setopt($r, CURLOPT_POSTFIELDS, $payload);
 
         if ($multicurl) {
-            curl_multi_add_handle($multicurl, $r);
-            return $r;
+            $multicurl->addHandle($r);
+            return "Multi-cURL";
         } else {
             $result = curl_exec($r);
             curl_close($r);
