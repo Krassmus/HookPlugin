@@ -23,7 +23,7 @@ class HookPlugin extends StudIPPlugin implements SystemPlugin, RESTAPIPlugin
     public function getRouteMaps()
     {
         return [
-            new HooksRouteMap(),
+            new Hooks(),
         ];
     }
 
